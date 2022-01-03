@@ -22,7 +22,7 @@ class Jwt_methods:
     def token_validate(token: str, outpul: bool = False):
         try:
             if outpul:
-                decode(token, key=getenv("SECRET"), algorithms=["HS256"])
+                return decode(token, key=getenv("SECRET"), algorithms=["HS256"])
             decode(token, key=getenv("SECRET"), algorithms=["HS256"])
         except exceptions.DecodeError as e:
             return JSONResponse(content={"message": "Invalid Token"}, status_code=status.HTTP_401_UNAUTHORIZED)

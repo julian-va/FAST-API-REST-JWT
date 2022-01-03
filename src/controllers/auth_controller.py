@@ -1,7 +1,9 @@
-from fastapi import APIRouter, status, Body, Depends
+from os import getenv
+from fastapi import APIRouter, status, Body, Depends, Header
 from src.models.user import User_login
 from src.services.auth_service import Auth_service
 from fastapi.responses import JSONResponse
+from src.libs.jwt_functions import Jwt_methods
 
 routes_auth = APIRouter(prefix="/api/v1/auth")
 
@@ -11,9 +13,17 @@ async def login(user: User_login = Body(...), service: Auth_service = Depends(Au
     try:
         result = await service.login_verification(user.user_hashed_password, user.user_email)
         if result:
-            return JSONResponse(content=f"{result}", status_code=status.HTTP_202_ACCEPTED)
-        return JSONResponse(content=f"{result}", status_code=status.HTTP_401_UNAUTHORIZED)
+            token = Jwt_methods.write_token(
+                user.dict(), int(getenv("TOKEN_DURATION")))
+            return JSONResponse(content={"token": f"{token}"}, status_code=status.HTTP_202_ACCEPTED)
+        return JSONResponse(content={"message": "invalid email or password"}, status_code=status.HTTP_401_UNAUTHORIZED)
 
     except Exception as e:
         raise e
-    print(user)
+
+
+@routes_auth.post(path="/token/verify", summary="verify token", tags=["Auth"])
+async def token_verify(Authorization: str = Header(default=None)):
+    token = Authorization.split(" ")[1]
+    return Jwt_methods.token_validate(token, outpul=True)
+    print(token)

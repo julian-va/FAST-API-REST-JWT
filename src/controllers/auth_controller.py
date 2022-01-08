@@ -4,8 +4,11 @@ from src.models.user import User_login
 from src.services.auth_service import Auth_service
 from fastapi.responses import JSONResponse
 from src.libs.jwt_functions import Jwt_methods
+from fastapi.security import OAuth2PasswordBearer
 
 routes_auth = APIRouter(prefix="/api/v1/auth")
+
+oauth_2passwor = OAuth2PasswordBearer("/api/v1/auth/login")
 
 
 @routes_auth.post(path="/login", summary="Login a User", tags=["Auth"])

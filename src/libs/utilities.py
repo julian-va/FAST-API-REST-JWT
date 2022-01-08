@@ -9,7 +9,7 @@ class Utilities(object):
     async def encrypt_password(password: str) -> bytes:
         try:
 
-            salt: bytes = gensalt(rounds=10,)
+            salt: bytes = gensalt(rounds=20,)
             hashed: bytes = hashpw(password.encode(), salt)
             return hashed
         except Exception as e:

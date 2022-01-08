@@ -1,6 +1,6 @@
 from src.libs.utilities import Utilities
 from src.databases.config_db import get_db, Session
-from src.entity_model.login_entity import User_entity
+from src.entity_model.entitys import User_entity
 from fastapi import Depends
 
 

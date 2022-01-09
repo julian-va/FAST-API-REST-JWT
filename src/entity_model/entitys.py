@@ -14,6 +14,7 @@ class User_entity(Base):
     user_email = Column(String(256), unique=True, index=True, nullable=False)
     user_hashed_password = Column(String(256), nullable=False)
     user_is_active = Column(Boolean, default=True, nullable=False)
+    files_users = relationship("User_file_entity", back_populates="users")
 
 
 class User_file_entity(Base):
@@ -30,5 +31,5 @@ class User_file_entity(Base):
                             index=True, nullable=False)
     user_is_active = Column(Boolean, default=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"))
-    usersr = relationship(
-        "User_entity", backref=backref("user_files", lazy=True))
+    users = relationship(
+        "User_entity", back_populates="files_users")

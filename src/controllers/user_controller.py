@@ -12,16 +12,16 @@ routes_users = APIRouter(prefix="/api/v1/users")
 @routes_users.post(path="/create", response_model=User_base, status_code=status.HTTP_201_CREATED, summary="Create a User", tags=["Users"])
 async def create(user: User_create = Body(...), service: User_service = Depends(User_service)):
     try:
-        user_create = await service.create_user(user)
-        return user_create
+        user_created = await service.create_user(user)
+        return user_created
     except Exception as e:
         raise e
 
 
 @routes_users.get(path="/allUser", response_model=List[User_base], status_code=status.HTTP_200_OK, summary="get lla User", tags=["Users"])
-def all_user(service: User_service = Depends(User_service)):
+async def all_user(service: User_service = Depends(User_service)):
     try:
-        user_all: User_base = service.get_all_user()
+        user_all: User_base = await service.get_all_user()
         return user_all
     except Exception as e:
         raise e
@@ -38,8 +38,8 @@ def delete_user(user_id: int, service: User_service = Depends(User_service)):
         raise e
 
 
-@routes_users.put(path="/update/{user_id}", status_code=status.HTTP_200_OK | status.HTTP_404_NOT_FOUND, summary="delete User", tags=["Users"])
-async def delete_user(user_id: int, user: User_base = Body(...), service: User_service = Depends(User_service)):
+@routes_users.put(path="/update/{user_id}", status_code=status.HTTP_200_OK | status.HTTP_404_NOT_FOUND, summary="update User", tags=["Users"])
+async def delete_user(user_id: int, user: User_create = Body(...), service: User_service = Depends(User_service)):
     try:
         user_updtae = await service.update_user(user_id, user)
         if user_updtae is None:

@@ -5,7 +5,7 @@ from src.models.user_file import User_file_base
 
 
 @dataclass()
-class User_files_mapper(object):
+class User_files_mapper():
 
     async def user_file_entity_to_user_pydantic(self, user_file_entity: User_file_entity) -> User_file_base:
         try:

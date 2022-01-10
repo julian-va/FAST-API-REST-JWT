@@ -3,7 +3,7 @@ from src.databases.config_db import get_db, Session
 from fastapi import Depends
 from src.mappers.user_mapper import User_mapper
 from src.models.user import User_base, User_create
-from src.entity_model.entitys import User_entity
+from src.entity_model.entitys import User_entity, User_file_entity
 from src.libs.utilities import Utilities
 
 
@@ -15,6 +15,16 @@ class User_service():
             user_mapper: User_mapper = Depends(User_mapper)):
         self._db = db
         self._user_mapper = user_mapper
+
+    async def get_user(self, user_id: int):
+        try:
+            result = self._db.query(User_entity).filter(
+                User_entity.user_id == user_id).first()
+
+            if result:
+                return await self._user_mapper.user_entity_to_user_pydantic(result)
+        except Exception as e:
+            raise e
 
     async def get_all_user(self) -> List[User_base]:
 
@@ -49,14 +59,24 @@ class User_service():
         try:
             result = self._db.query(User_entity).filter(
                 User_entity.user_id == user_id).first()
+
             if result:
+                temps = self._db.query(User_file_entity).filter(
+                    User_file_entity.user_id == user_id).all()
+
+                if temps:
+                    for temp in temps:
+                        Utilities.delete_files(file_dir=temp.user_file_dir)
+                        self._db.delete(temp)
+
                 self._db.delete(result)
-                self._db.commit()
-                return result
+                self._db.flush()
 
         except Exception as e:
             self._db.rollback()
             raise e
+        self._db.commit()
+        return result
 
     async def update_user(self, user_id: int, user: User_create):
         try:

@@ -15,7 +15,8 @@ class User_files_mapper():
                 user_file_id=user_file_entity.user_file_id,
                 user_file_type=user_file_entity.user_file_type,
                 user_id=user_file_entity.user_id,
-                user_is_active=user_file_entity.user_is_active
+                user_is_active=user_file_entity.user_is_active,
+                creation_date=user_file_entity.creation_date
             )
             return result
         except Exception as e:

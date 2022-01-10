@@ -15,7 +15,8 @@ class User_mapper():
                 user_id=user.user_id,
                 user_is_active=user.user_is_active,
                 user_name=user.user_name,
-                user_name_login=user.user_name_login)
+                user_name_login=user.user_name_login,
+                creation_date=user.creation_date)
             return result
         except Exception as e:
             raise e

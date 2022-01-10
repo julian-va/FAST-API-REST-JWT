@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
@@ -21,4 +22,8 @@ class User_create(BaseModel):
 
 class User_base(User_create):
     """docstring for User_base."""
+    creation_date: Optional[datetime]
     user_id: int
+
+    class Config:
+        orm_mode = True

@@ -3,15 +3,22 @@ from fastapi import UploadFile, File, Form, APIRouter, Depends, status, response
 from fastapi.responses import FileResponse, JSONResponse
 from src.models.user_file import User_file_base
 from src.services.files_service import Files_service
+from src.services.user_service import User_service
 
 routes_files = APIRouter(prefix="/api/v1/files", tags=["files"])
 
 
-@routes_files.post(path="/uploadMultipleFiles/{user_id}", response_model=List[User_file_base], status_code=status.HTTP_201_CREATED)
-async def upload_multiple_files(user_id: int, files: List[UploadFile] = File(...), service: Files_service = Depends(Files_service)):
+@routes_files.post(path="/uploadMultipleFiles/{user_id}", response_model=List[User_file_base], status_code=status.HTTP_201_CREATED | status.HTTP_404_NOT_FOUND)
+async def upload_multiple_files(user_id: int, files: List[UploadFile] = File(...), service: Files_service = Depends(Files_service), user_service: User_service = Depends(User_service)):
     try:
-        result = await service.upload_file_list(user_id, files)
-        return result
+        temp = await user_service.get_user(user_id=user_id)
+        if temp:
+            result = await service.upload_file_list(user_id, files)
+            return result
+        else:
+            return JSONResponse(content=(
+                f"user with user_id= {user_id} does not exist"), status_code=status.HTTP_404_NOT_FOUND)
+
     except Exception as e:
         raise e
 

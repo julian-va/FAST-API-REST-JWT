@@ -1,6 +1,7 @@
 
 from dataclasses import dataclass
-
+import uuid
+import os
 from sqlalchemy.sql.expression import true
 from src.libs.utilities import Utilities
 from typing import List
@@ -9,7 +10,6 @@ from fastapi import Depends, UploadFile
 from src.mappers.user_files_mapper import User_files_mapper
 from src.models.user_file import User_file_create, User_file_base
 from src.entity_model.entitys import User_file_entity
-import os
 
 
 @dataclass
@@ -25,16 +25,16 @@ class Files_service():
     async def upload_file_list(self, user_id: int, files: List[UploadFile]) -> List[User_file_base]:
         result: List[User_file_base] = []
         dirs: List[str] = []
+        path: str = os.getenv("UPLOAD_DIR")
         try:
-
             for file in files:
-                with open(os.getenv("UPLOAD_DIR")+file.filename, "wb") as my_file:
+                name_file_dir: str = f"{path}user_id={user_id}-{uuid.uuid1()}-{file.filename}"
+                with open(name_file_dir, "wb") as my_file:
                     content = await file.read()
                     my_file.write(content)
                     my_file.close()
                     user_file = User_file_entity()
-                    user_file.user_file_dir = os.getenv(
-                        "UPLOAD_DIR")+file.filename
+                    user_file.user_file_dir = name_file_dir
                     user_file.user_file_name = file.filename
                     user_file.user_file_type = file.content_type
                     user_file.user_id = user_id

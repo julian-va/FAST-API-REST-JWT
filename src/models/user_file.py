@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class User_file_create(BaseModel):
@@ -16,6 +17,7 @@ class User_file_create(BaseModel):
 
 class User_file_base(User_file_create):
     """docstring for User_create."""
+    creation_date: Optional[datetime]
     user_file_id: int = Field(...)
 
     class Config:

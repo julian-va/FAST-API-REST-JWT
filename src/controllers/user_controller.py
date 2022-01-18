@@ -18,7 +18,7 @@ async def create(user: User_create = Body(...), service: User_service = Depends(
         raise e
 
 
-@routes_users.get(path="/userById/{user_id}", response_model=User_base, status_code=status.HTTP_200_OK | status.HTTP_404_NOT_FOUND, summary="get user by id")
+@routes_users.get(path="/userById/{user_id}", response_model=User_base, status_code=status.HTTP_200_OK, summary="get user by id")
 async def get_user(user_id: int, service: User_service = Depends(User_service)):
     try:
 

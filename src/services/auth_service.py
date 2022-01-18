@@ -1,4 +1,5 @@
 
+import this
 from src.libs.utilities import Utilities
 from src.databases.config_db import get_db, Session
 from src.entity_model.entitys import User_entity
@@ -21,7 +22,9 @@ class Auth_service():
 
             if result:
                 verification = await Utilities.compare_password(password, result.user_hashed_password)
+                if verification:
+                    return verification, await self._user_mapper.user_entity_to_user_pydantic(result)
 
-            return verification, await self._user_mapper.user_entity_to_user_pydantic(result)
+            return verification
         except Exception as e:
             raise e

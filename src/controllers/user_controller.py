@@ -58,6 +58,7 @@ async def delete_user(user_id: int, user: User_create = Body(...), service: User
         user_updtae = await service.update_user(user_id, user)
         if user_updtae is None:
             return JSONResponse(content="User not found", status_code=status.HTTP_404_NOT_FOUND)
+        user_updtae.creation_date = user_updtae.creation_date.ctime()
         return JSONResponse(content=user_updtae.dict(), status_code=status.HTTP_200_OK)
     except Exception as e:
         raise e

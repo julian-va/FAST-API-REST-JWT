@@ -8,7 +8,7 @@ from src.services.user_service import User_service
 routes_files = APIRouter(prefix="/api/v1/files", tags=["files"])
 
 
-@routes_files.post(path="/uploadMultipleFiles/{user_id}", response_model=List[User_file_base], status_code=status.HTTP_201_CREATED | status.HTTP_404_NOT_FOUND)
+@routes_files.post(path="/uploadMultipleFiles/{user_id}", response_model=List[User_file_base], status_code=status.HTTP_201_CREATED)
 async def upload_multiple_files(user_id: int, files: List[UploadFile] = File(...), service: Files_service = Depends(Files_service), user_service: User_service = Depends(User_service)):
     try:
         temp = await user_service.get_user(user_id=user_id)
@@ -16,8 +16,8 @@ async def upload_multiple_files(user_id: int, files: List[UploadFile] = File(...
             result = await service.upload_file_list(user_id, files)
             return result
         else:
-            return JSONResponse(content=(
-                f"user with user_id= {user_id} does not exist"), status_code=status.HTTP_404_NOT_FOUND)
+            return JSONResponse(content={"message":
+                                         f"user with user_id= {user_id} does not exist"}, status_code=status.HTTP_404_NOT_FOUND)
 
     except Exception as e:
         raise e
@@ -56,6 +56,7 @@ async def delete_file(file_id: int, service: Files_service = Depends(Files_servi
     try:
         result = await service.delete_files(file_id)
         if result:
+            result[0].creation_date = result[0].creation_date.ctime()
             return JSONResponse(content=result[0].dict(),
                                 status_code=status.HTTP_200_OK)
         else:
